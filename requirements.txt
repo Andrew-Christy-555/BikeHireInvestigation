@@ -1,0 +1,6 @@
+dash==2.14.1
+fingertips_py==0.3.0
+matplotlib==3.7.1
+numpy==1.24.2
+pandas==2.0.0
+Requests==2.31.0
