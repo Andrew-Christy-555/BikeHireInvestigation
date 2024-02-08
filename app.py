@@ -18,19 +18,21 @@ app = Dash(__name__)
 
 app.layout = html.Div([
     html.Div([
-        html.H3(
+        html.H1(
             children='Exploring Potential Areas for New Bike Hire Docking Stations',
             style={
-                'textAlign': 'center',
+                'textAlign': 'center','color':'red',
             }
         ),
         html.Div([
+            html.H4(
+                children='This app allows the exploration of population deprivation, obesity and overweight statistics, for Local Authority Districts. It also shows the number of bike docking stations within the Local Authority Districts (LAD) and Middle Super Output Areas (MSOA). Please select the ranges for each of these parameters and the table will update with the MSOAs and LADs that fit within those ranges. The table can also be sorted by any of the columns',
+                style={
+                        'textAlign': 'left','margin-left':'30px',
+                }
+            ),
+        ]),
             html.Div([
-                html.H2(
-                    children='Apply filters',
-                    style={
-                        'textAlign': 'center',
-                    }),
                 html.Label("% population overweight"),
                 dcc.RangeSlider(
                     min=0,
@@ -42,7 +44,6 @@ app.layout = html.Div([
                     marks=None,
                     tooltip={"placement": "top", "always_visible": True},
                 ),
-                html.Br(),
                 html.Label("% population obese"),
                 dcc.RangeSlider(
                     min=0.0,
@@ -54,7 +55,6 @@ app.layout = html.Div([
                     marks=None,
                     tooltip={"placement": "top", "always_visible": True},
                 ),
-                html.Br(),
                 html.Label("Docking Stations Local Authority Districts"),
                 dcc.RangeSlider(
                     min=0,
@@ -64,9 +64,10 @@ app.layout = html.Div([
                     id="numDockLADs_slider",
                     updatemode='drag',
                     marks=None,
-                    tooltip={"placement": "bottom", "always_visible": True},
+                    tooltip={"placement": "top", "always_visible": True},
                 ),
-                html.Br(),
+                ],style={'width':'80%','margin-left':'30px'}),
+            html.Div([
                 html.Label("Docking Stations MSOAs"),
                 dcc.RangeSlider(
                     min=0,
@@ -76,9 +77,8 @@ app.layout = html.Div([
                     id="numDockMSOAs_slider",
                     updatemode='drag',
                     marks=None,
-                    tooltip={"placement": "bottom", "always_visible": True},
+                    tooltip={"placement": "top", "always_visible": True},
                 ),
-                html.Br(),
                 html.Label("Mean Deprivation"),
                 dcc.RangeSlider(
                     min=0.0,
@@ -88,24 +88,24 @@ app.layout = html.Div([
                     id="IMD_mean_slider",
                     marks=None,
                     updatemode='drag',
-                    tooltip={"placement": "bottom", "always_visible": True},
+                    tooltip={"placement": "top", "always_visible": True},
                 ),
                 html.Br(),
-                ])
-            ])
+                ],style={'width':'80%','margin-left':'30px'})
         ]),
-
         html.Div([dash_table.DataTable(
                 id='datatable-interactivity',
                 editable=True,
                 style_data={'height': 'auto'},
                 style_table={'overflowX': 'scroll',       
-                	'maxHeight': '300px',
+                	'maxHeight': '900px',
 			'overflowY': 'scroll'},
                 style_cell={
                 	'minWidth': '0px', 'maxWidth': '180px',
                 	'whiteSpace': 'normal',
                 },
+                sort_action="native",
+                sort_mode="multi",
                 
                 columns=[
                 {"name": i, "id": i, "deletable": True, "selectable": True} for i in df.columns
@@ -114,7 +114,7 @@ app.layout = html.Div([
             	),
                 html.Div(id='datatable-interactivity-container')
         ])    
-    ])
+        ])
 
 @app.callback(
         Output('datatable-interactivity','data'),
@@ -136,4 +136,4 @@ def update_datatable(ovr,obs,numDocksLADs,numDocksMSOAs,dep):
         return data 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False)
