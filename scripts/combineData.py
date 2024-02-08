@@ -59,37 +59,36 @@ for name, df in all_dataframes.items():
     qa_min=df[col_name].min()
     qa_mean=df[col_name].mean()
     qa_median=df[col_name].median()
-    qa_stdev=df[col_name].stdev()
     print(name)
     print(f"Number of empty rows: {empty}")
     print(f"Number of populated rows: {populated}")
     print(f"Min Value: {qa_min}")
     print(f"Max Value: {qa_max}")
     print(f"Mean Value: {qa_mean}")
-    print(f"Standard Deviation Value: {qa_stdev}")
-    print(f"Median Value: {qa_median}")
+    print(f"Median Value: {qa_median}\n")
 
-#9.0 eplace nulls with 0s for MSOAs that don't have any docking stations and convert value to int
+#9.0 replace nulls with 0s for MSOAs that don't have any docking stations and convert value to int
 locationDockingStationsMSOA['Count_of_Docking_Stations_MSOA'].fillna(0, inplace=True)
 locationCycling['Cycling Percentage'].fillna(0, inplace=True)
 locationDockingStationsMSOA['Count_of_Docking_Stations_MSOA']=locationDockingStationsMSOA['Count_of_Docking_Stations_MSOA'].astype(int)
+locationDockingStationsMSOA.rename(columns={'Count_of_Docking_Stations_MSOA':'Num Docking Stations MSOAs'}, inplace=True)
 
 #10.0 sum number of docking stations in each local authority district
-dockingStationsLADs = locationDockingStationsMSOA.groupby('LAD22CD')['Count_of_Docking_Stations_MSOA'].sum()
-locationDockingStationsMSOA['Num Docking Stations Local Authority Districs']=locationDockingStationsMSOA['LAD22CD'].map(dockingStationsLADs)
+dockingStationsLADs = locationDockingStationsMSOA.groupby('LAD22CD')['Num Docking Stations MSOAs'].sum()
+locationDockingStationsMSOA['Num Docking Stations Local Authority Districts']=locationDockingStationsMSOA['LAD22CD'].map(dockingStationsLADs)
 
 
 #11.0 Add rankings
 locationObesity['obesityRank'] = locationObesity['Obesity Percentage (18+)'].rank(ascending=False,na_option='keep',method='min',pct=False)
 locationOverweight['overweightRank'] = locationOverweight['Overweight Percentage (18+)'].rank(ascending=False,na_option='keep',method='min',pct=False)
-locationDockingStationsMSOA['numDockingMSOARank'] = locationDockingStationsMSOA['Count_of_Docking_Stations_MSOA'].rank(ascending=True,na_option='top',method='min',pct=False)
+locationDockingStationsMSOA['numDockingMSOARank'] = locationDockingStationsMSOA['Num Docking Stations MSOAs'].rank(ascending=True,na_option='top',method='min',pct=False)
 summarisedLocationDeprivation['deprivationRank_mean'] = summarisedLocationDeprivation['IMD mean'].rank(ascending=False,na_option='keep',method='min',pct=False)
 summarisedLocationDeprivation['deprivationRank_median'] = summarisedLocationDeprivation['IMD median'].rank(ascending=False,na_option='keep',method='min',pct=False)
 summarisedLocationDeprivation['deprivationRank_max'] = summarisedLocationDeprivation['IMD max'].rank(ascending=False,na_option='keep',method='min',pct=False)
 locationCycling['cyclingRank'] = locationCycling['Cycling Percentage'].rank(ascending=True,na_option='keep',method='min',pct=False)
 
 #12.0 Combine all of the data together to produce aggregated dataset
-newdf=pd.merge(MSOA_Full_Info,locationDockingStationsMSOA[['numDockingMSOARank','Count_of_Docking_Stations_MSOA','Num Docking Stations Local Authority Districs','MSOA21CD']],how="left",on=["MSOA21CD"])
+newdf=pd.merge(MSOA_Full_Info,locationDockingStationsMSOA[['numDockingMSOARank','Num Docking Stations MSOAs','Num Docking Stations Local Authority Districts','MSOA21CD']],how="left",on=["MSOA21CD"])
 print(len(newdf))
 newdf_1=pd.merge(newdf,locationObesity[['obesityRank','Obesity Percentage (18+)','LAD22CD']],how="left",on=["LAD22CD"])
 print(len(newdf_1))
@@ -98,8 +97,12 @@ print(len(newdf_2))
 newdf_3=pd.merge(newdf_2,summarisedLocationDeprivation,how="left",on=["MSOA21CD"])
 print(len(newdf_3))
 newdf_4=pd.merge(newdf_3,locationCycling[['cyclingRank','Cycling Percentage','LAD22CD']],how="left",on=["LAD22CD"])
+print(newdf_4.columns)
 
-#13.0 Export dataset
+#13.0 round chosen values to 2 dec places
+for name in ['Obesity Percentage (18+)','Overweight Percentage (18+)','Cycling Percentage','IMD mean','IMD median','IMD max']:
+    newdf_4[name]=newdf_4[name].round(2)
+#14.0 Export dataset
 newdf_4.to_csv("../assets/combinedData.csv",index=False)
 print(len(newdf_4))
 
