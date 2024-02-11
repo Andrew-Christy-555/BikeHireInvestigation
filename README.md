@@ -6,9 +6,10 @@ Project to investigate potential locations for new bike docking stations
 ### How to run this code:
 1. Clone the repository
 2. Install the required Python libraries by typing "pip3 install requirements.txt" in your terminal
-3. Create folder name "assets/" using the terminal command "mkdir assets/"
-4. Navigate to /scripts/ and run "./dataPrep.sh" in the terminal commandline. This will take roughly 30 mins to run as it extracts and collates all of the data required by the dashboard.
-5. Run the dashboard using the terminal command "Python3 app.py" and open the link that appears. You can then interact with the dashboard to conduct exploratory analysis.
+3. Navigate to /scripts/ and run "./dataPrep.sh" in the terminal commandline. This will take roughly 30 mins to run as it extracts and collates all of the data required by the dashboard.
+4. Run the dashboard using the terminal command "Python3 app.py" and open the link that appears. You can then interact with the dashboard to conduct exploratory analysis.
+
+The dashboard can also be run without carrying out step 3, as finalDataset.csv is stored in the repo.
 
 ### Key scripts
 
