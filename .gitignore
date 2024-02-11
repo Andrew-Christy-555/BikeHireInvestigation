@@ -4,6 +4,7 @@ __pycache__/
 *$py.class
 *.csv
 *.png
+!finalDataset.csv
 
 # C extensions
 *.so
